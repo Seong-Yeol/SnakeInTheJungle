@@ -63,20 +63,21 @@ public class GameData {
                     mFieldMat[mHeadX][mHeadY] = HEAD;
                 }
 //                    heady--;
-                break;
-            case SOUTH:
-                if( heady < 19)
-//                    heady++;
-                break;
-            case WEST:
-                if( headx > 0 )
-//                    headx--;
-                break;
-            case EAST:
-                if( headx < 19 )
-//                    headx++;
-                break;
+//                break;
+//            case SOUTH:
+//                if( heady < 19)
+////                    heady++;
+//                break;
+//            case WEST:
+//                if( headx > 0 )
+////                    headx--;
+//                break;
+//            case EAST:
+//                if( headx < 19 )
+////                    headx++;
+//                break;
         }
+        return true;
     }
 
     private void moveBody(){

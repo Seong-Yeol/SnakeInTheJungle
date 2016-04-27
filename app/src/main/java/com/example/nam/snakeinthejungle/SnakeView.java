@@ -16,20 +16,36 @@ import android.view.View;
  * Created by Nam on 2016-04-27.
  */
 public class SnakeView extends View {
+    GameData mGameData;
+
     private Bitmap background;
     private Bitmap mBitHead1;
     private Bitmap mBitHead2;
     private Bitmap mBitHead3;
     private Bitmap mBitHead4;
 
+    private Bitmap mBitBody1;
+    private Bitmap mBitBody2;
+
+    private Bitmap mBitCuvBody1;
+    private Bitmap mBitCuvBody2;
+    private Bitmap mBitCuvBody3;
+    private Bitmap mBitCuvBody4;
+
+    private Bitmap mBitTail1;
+    private Bitmap mBitTail2;
+    private Bitmap mBitTail3;
+    private Bitmap mBitTail4;
+
+    private Bitmap mEmpty;
+
     int headx;
     int heady;
     int tick = 0;
     int last_moved_tick = 0;
 
-
-    private int mDirection = SOUTH;
-    private int mNextDirection = SOUTH;
+    private int mDirection = EAST;
+    private int mNextDirection = EAST;
     private static final int NORTH = 1;
     private static final int SOUTH = 2;
     private static final int EAST = 3;
@@ -49,8 +65,38 @@ public class SnakeView extends View {
         bd = (BitmapDrawable)res.getDrawable(R.drawable.head4);
         mBitHead4 = bd.getBitmap();
 
+        bd = (BitmapDrawable)res.getDrawable(R.drawable.body1);
+        mBitBody1 = bd.getBitmap();
+        bd = (BitmapDrawable)res.getDrawable(R.drawable.body2);
+        mBitBody2 = bd.getBitmap();
+
+        bd = (BitmapDrawable)res.getDrawable(R.drawable.c_body1);
+        mBitCuvBody1 = bd.getBitmap();
+        bd = (BitmapDrawable)res.getDrawable(R.drawable.c_body2);
+        mBitCuvBody2 = bd.getBitmap();
+        bd = (BitmapDrawable)res.getDrawable(R.drawable.c_body3);
+        mBitCuvBody3 = bd.getBitmap();
+        bd = (BitmapDrawable)res.getDrawable(R.drawable.c_body4);
+        mBitCuvBody4 = bd.getBitmap();
+
+        bd = (BitmapDrawable)res.getDrawable(R.drawable.tail1);
+        mBitTail1 = bd.getBitmap();
+        bd = (BitmapDrawable)res.getDrawable(R.drawable.tail2);
+        mBitTail2 = bd.getBitmap();
+        bd = (BitmapDrawable)res.getDrawable(R.drawable.tail3);
+        mBitTail3 = bd.getBitmap();
+        bd = (BitmapDrawable)res.getDrawable(R.drawable.tail4);
+        mBitTail4 = bd.getBitmap();
+
+        bd = (BitmapDrawable)res.getDrawable(R.drawable.empty);
+        mEmpty = bd.getBitmap();
+
+
         headx = 0;
         heady = 0;
+
+        mGameData = new GameData();
+        mGameData.init();
 
         mHandler.sendEmptyMessage(0);
 
@@ -121,7 +167,7 @@ public class SnakeView extends View {
         }
     };
 
-    private Rect HeadPos(int x, int y) {
+    private Rect setPos(int x, int y) {
         int min = Math.min(this.getWidth(),this.getHeight());
         double v1 = (double)min/(double)background.getWidth();
         double v2 = (double)background.getWidth()/(double)500;
@@ -141,25 +187,88 @@ public class SnakeView extends View {
 
 //        Bitmap mask = Bitmap.createBitmap(background.getWidth(),background.getHeight(),Bitmap.Config.ARGB_8888);
 
-
+        /*배경 드로우*/
         canvas.drawBitmap(background, null, new Rect(0,0,min,min*420/500), null);
-        switch (mDirection){
-            case 1:
-                canvas.drawBitmap(mBitHead1,null, HeadPos(headx,heady),null);
-                break;
-            case 2:
-                canvas.drawBitmap(mBitHead2,null, HeadPos(headx,heady),null);
-                break;
-            case 3:
-                canvas.drawBitmap(mBitHead3,null, HeadPos(headx,heady),null);
-                break;
-            case 4:
-                canvas.drawBitmap(mBitHead4,null, HeadPos(headx,heady),null);
-                break;
+
+//        mGameData.getFieldMat();
+
+        int i,j;
+
+        for(i=0;i< 20 ;i++){
+            for(j=0;j<20;j++){
+                switch (mGameData.getFieldData(i,j)){
+                    case GameData.HEAD:
+                        switch (mDirection){
+                            case NORTH:
+                                canvas.drawBitmap(mBitHead1,null, setPos(i,j),null);
+                                break;
+                            case SOUTH:
+                                canvas.drawBitmap(mBitHead2,null, setPos(i,j),null);
+                                break;
+                            case EAST:
+                                canvas.drawBitmap(mBitHead3,null, setPos(i,j),null);
+                                break;
+                            case WEST:
+                                canvas.drawBitmap(mBitHead4,null, setPos(i,j),null);
+                                break;
+                        }
+                        break;
+
+                    case GameData.EAST:
+                    case GameData.WEST:
+                        canvas.drawBitmap(mBitBody1,null, setPos(i,j),null);
+                        break;
+
+                    case GameData.SOUTH:
+                    case GameData.NORTH:
+                        canvas.drawBitmap(mBitBody2,null, setPos(i,j),null);
+                        break;
+
+                    case GameData.NEAST:
+                        canvas.drawBitmap(mBitCuvBody1,null, setPos(i,j),null);
+                        break;
+                    case GameData.SEAST:
+                        canvas.drawBitmap(mBitCuvBody2,null, setPos(i,j),null);
+                        break;
+                    case GameData.SWEST:
+                        canvas.drawBitmap(mBitCuvBody3,null, setPos(i,j),null);
+                        break;
+                    case GameData.NWEST:
+                        canvas.drawBitmap(mBitCuvBody4,null, setPos(i,j),null);
+                        break;
+
+                    case GameData.NTAIL:
+                        canvas.drawBitmap(mBitTail1,null,setPos(i,j),null);
+                        break;
+                    case GameData.STAIL:
+                        canvas.drawBitmap(mBitTail2,null,setPos(i,j),null);
+                        break;
+                    case GameData.ETAIL:
+                        canvas.drawBitmap(mBitTail3,null,setPos(i,j),null);
+                        break;
+                    case GameData.WTAIL:
+                        canvas.drawBitmap(mBitTail4,null,setPos(i,j),null);
+                        break;
+                    default:
+                        canvas.drawBitmap(mEmpty,null, setPos(i,j),null);
+                        break;
+
+                }
+            }
         }
-
-
-        double v = (double)min/(double)background.getWidth(); //
-
+//        switch (mDirection){
+//            case 1:
+//                canvas.drawBitmap(mBitHead1,null, setPos(headx,heady),null);
+//                break;
+//            case 2:
+//                canvas.drawBitmap(mBitHead2,null, setPos(headx,heady),null);
+//                break;
+//            case 3:
+//                canvas.drawBitmap(mBitHead3,null, setPos(headx,heady),null);
+//                break;
+//            case 4:
+//                canvas.drawBitmap(mBitHead4,null, setPos(headx,heady),null);
+//                break;
+//        }
     }
 }

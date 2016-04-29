@@ -6,7 +6,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-public class MainActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity {
 
     GestureDetector mDetector;
     SnakeView sv;
@@ -17,7 +17,6 @@ public class MainActivity extends AppCompatActivity {
 
         mDetector = new GestureDetector(this, mGestureListener);
         sv = new SnakeView(this);
-
 
         setContentView(sv);
 

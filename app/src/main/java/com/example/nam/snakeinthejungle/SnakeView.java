@@ -99,17 +99,7 @@ public class SnakeView extends View {
     };
 
     private Rect setPos(int x, int y) {
-        int min = Math.min(this.getWidth(),this.getHeight());
-        int bgWid = mBitMapContainer.getBitmap("background").getWidth();
-        double v1 = (double)min/(double)bgWid;
-        double v2 = (double)bgWid/(double)500;
-
-        int left = (int)(x*16*v1*v2 +  (50*v1*v2));
-        int top = (int)(y*16*v1*v2 +  (50*v1*v2));
-        int right = left + (int)(16*v1*v2);
-        int bottom = top + (int)(16*v1*v2);
-
-        return new Rect(left, top, right, bottom);
+        return setPos(new Point(x,y));
     }
 
     private Rect setPos(Point point) {
@@ -118,10 +108,10 @@ public class SnakeView extends View {
         double v1 = (double)min/(double)bgWid;
         double v2 = (double)bgWid/(double)500;
 
-        int left = (int)(point.getX()*16*v1*v2 +  (50*v1*v2));
-        int top = (int)(point.getY()*16*v1*v2 +  (50*v1*v2));
-        int right = left + (int)(16*v1*v2);
-        int bottom = top + (int)(16*v1*v2);
+        int left = (int)((double)point.getX()*(double)16*v1*v2 +  ((double)50*v1*v2));
+        int top = (int)((double)point.getY()*(double)16*v1*v2 +  ((double)50*v1*v2));
+        int right = left + (int)((double)16*v1*v2);
+        int bottom = top + (int)((double)16*v1*v2);
 
         return new Rect(left, top, right, bottom);
     }

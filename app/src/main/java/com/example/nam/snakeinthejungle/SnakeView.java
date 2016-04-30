@@ -22,13 +22,15 @@ import java.util.ArrayList;
  */
 public class SnakeView extends View {
     GameData mGameData;
-    BitMapContainer mBitMapContainer;
+    BitMapContainer mBitC;
 
     int headx;
     int heady;
     int tick = 0;
     int last_moved_tick = 0;
     int mLastGenApple = 0;
+    Rect mInnerRect;
+    boolean initedOnDraw = false;
 
     private static final int NORTH = 1;
     private static final int SOUTH = 2;
@@ -44,9 +46,11 @@ public class SnakeView extends View {
         mGameData = new GameData();
         mGameData.init();
 
-        mBitMapContainer = new BitMapContainer(context);
+        mBitC = new BitMapContainer(context);
 
         mHandler.sendEmptyMessage(0);
+        
+        
 
     }
 
@@ -62,7 +66,6 @@ public class SnakeView extends View {
             last_moved_tick = tick;
             mGameData.updateSnake();
         }
-
 
         invalidate();
     }
@@ -102,11 +105,23 @@ public class SnakeView extends View {
         return setPos(new Point(x,y));
     }
 
+    public Rect innerPos(Point point) {
+        Rect innerRect = new Rect();
+        int tail_chip_size = (int)getResources().getDimension(R.dimen.tail_chip_width);
+
+        innerRect.set(mInnerRect.left + tail_chip_size*point.getX(), mInnerRect.top + tail_chip_size*point.getY()
+                ,mInnerRect.left + tail_chip_size*(point.getX()+1), mInnerRect.top + tail_chip_size*(point.getY()+1));
+
+        return innerRect;
+    }
+
     private Rect setPos(Point point) {
         int min = Math.min(this.getWidth(),this.getHeight());
-        int bgWid = mBitMapContainer.getBitmap("background").getWidth();
+        int bgWid = mBitC.getBitmap("background").getWidth();
         double v1 = (double)min/(double)bgWid;
         double v2 = (double)bgWid/(double)500;
+
+
 
         int left = (int)((double)point.getX()*(double)16*v1*v2 +  ((double)50*v1*v2));
         int top = (int)((double)point.getY()*(double)16*v1*v2 +  ((double)50*v1*v2));
@@ -116,17 +131,94 @@ public class SnakeView extends View {
         return new Rect(left, top, right, bottom);
     }
 
+    private void initOnDraw(){
+        int width_picxels = this.getWidth();
+        int height_picxels = this.getHeight();
+
+        int tbheight = (int)getResources().getDimension(R.dimen.top_block_height);
+        int vbwidth = (int)getResources().getDimension(R.dimen.vertical_block_chip_width);
+        /*tcwh is 'Tail Chip's Width and Height'*/
+        int tcwh = (int)getResources().getDimension(R.dimen.tail_chip_width);
+
+        int inner_width = width_picxels - vbwidth*2;
+        int inner_horizon_blocks = inner_width / tcwh;
+        int inner_padding_width = (inner_width%tcwh)/2;
+
+        if( inner_padding_width < tcwh / 4){
+            inner_padding_width = tcwh / 2;
+            inner_horizon_blocks--;
+            inner_width = inner_horizon_blocks * tcwh;
+        }
+
+        Log.d("Nam","InnerWidth="+inner_width + " InnerHorizonBlocks=" + inner_horizon_blocks + " InnerPaddingWid="+ inner_padding_width);
+
+        int inner_height = height_picxels - tbheight*2;
+        int inner_vertical_blocks = inner_height / tcwh;
+        int inner_padding_height = (inner_height%tcwh)/2;
+
+        if( inner_padding_height < tcwh / 4){
+            inner_padding_height = tcwh / 2;
+            inner_vertical_blocks--;
+            inner_height = inner_vertical_blocks * tcwh;
+        }
+
+        Log.d("Nam","InnerHeight="+inner_height + " InnerVerticalBlocks=" + inner_vertical_blocks + " InnerPaddingHit="+ inner_padding_height);
+
+        mInnerRect = new Rect(vbwidth + inner_padding_width, tbheight + inner_padding_height
+                ,vbwidth + inner_padding_width + tcwh*(inner_horizon_blocks), tbheight + inner_padding_height + tcwh*(inner_vertical_blocks));
+
+        Log.d("Nam","InnerRect=" + mInnerRect);
+
+        mGameData.setInnerFieldSize(new Point(inner_horizon_blocks,inner_vertical_blocks));
+    }
+
     public void onDraw(Canvas canvas){
-        canvas.drawColor(Color.WHITE);
-
-        int min = Math.min(this.getWidth(),this.getHeight());
-
-//        Bitmap mask = Bitmap.createBitmap(background.getWidth(),background.getHeight(),Bitmap.Config.ARGB_8888);
+        if( !initedOnDraw ){
+            initOnDraw();
+            initedOnDraw = true;
+        }
 
         /*배경 드로우*/
-        canvas.drawBitmap(mBitMapContainer.getBitmap("background"), null, new Rect(0,0,min,min*420/500), null);
+//        canvas.drawBitmap(mBitC.getBitmap("background"), null, new Rect(0,0,min,min*420/500), null);
+        Bitmap corner_block1 = mBitC.getBitmap("corner_block1");
+        Bitmap corner_block2 = mBitC.getBitmap("corner_block2");
+        Bitmap corner_block3 = mBitC.getBitmap("corner_block3");
+        Bitmap corner_block4 = mBitC.getBitmap("corner_block4");
+        Bitmap top_block = mBitC.getBitmap("top_block");
+        Bitmap bottom_block = mBitC.getBitmap("bottom_block");
+        Bitmap left_block = mBitC.getBitmap("left_block");
+        Bitmap right_block = mBitC.getBitmap("right_block");
+        Bitmap lion = mBitC.getBitmap("lion");
 
-//        mGameData.getFieldMat();
+        int width_picexls = this.getWidth();
+        int heidth_picexls = this.getHeight();
+
+        int cbwidth = corner_block1.getWidth();
+        int cbheight = corner_block1.getHeight();
+        int tbwidth = top_block.getWidth();
+        int tbheight = top_block.getHeight();
+        int vbwidth = left_block.getWidth();
+        int vbheigh = right_block.getHeight();
+
+        canvas.drawColor(Color.GREEN);
+
+        for(int i=1; cbwidth+tbwidth*i < width_picexls ; ++i){
+            canvas.drawBitmap(top_block, null, new Rect(cbwidth+tbwidth*(i-1),0,cbwidth+tbwidth*i,tbheight), null);
+            canvas.drawBitmap(bottom_block, null, new Rect(cbwidth+tbwidth*(i-1),heidth_picexls-tbheight,cbwidth+tbwidth*i,heidth_picexls), null);
+        }
+
+        for(int i=1; cbheight+vbheigh*i < heidth_picexls ; ++i){
+            canvas.drawBitmap(left_block, null, new Rect(0,cbheight+vbheigh*(i-1),vbwidth,cbheight+vbheigh*i), null);
+            canvas.drawBitmap(right_block, null, new Rect(width_picexls-vbwidth,cbheight+vbheigh*(i-1),width_picexls,cbheight+vbheigh*i), null);
+        }
+
+        canvas.drawBitmap(corner_block1, null, new Rect(0,0,cbwidth,cbheight), null);
+        canvas.drawBitmap(corner_block2, null, new Rect(width_picexls-cbwidth,0,width_picexls,cbheight), null);
+        canvas.drawBitmap(corner_block3, null, new Rect(0,heidth_picexls-cbheight,cbwidth,heidth_picexls), null);
+        canvas.drawBitmap(corner_block4, null, new Rect(width_picexls-cbwidth,heidth_picexls-cbheight,width_picexls,heidth_picexls), null);
+
+        canvas.drawBitmap(lion, null, new Rect(width_picexls-lion.getWidth(),heidth_picexls-lion.getHeight(),width_picexls,heidth_picexls),null);
+
 
         int i,j;
 
@@ -138,23 +230,23 @@ public class SnakeView extends View {
         switch(mGameData.getDiection()){
             case GameData.NORTH:
                 canvas.drawBitmap(
-                        mBitMapContainer.getBitmap("head1")
-                        ,null, setPos(bodyList.get(0)),null);
+                        mBitC.getBitmap("head1")
+                        ,null, innerPos(bodyList.get(0)),null);
                 break;
             case GameData.SOUTH:
                 canvas.drawBitmap(
-                        mBitMapContainer.getBitmap("head2")
-                        ,null, setPos(bodyList.get(0)),null);
+                        mBitC.getBitmap("head2")
+                        ,null, innerPos(bodyList.get(0)),null);
                 break;
             case GameData.EAST:
                 canvas.drawBitmap(
-                        mBitMapContainer.getBitmap("head3")
-                        ,null, setPos(bodyList.get(0)),null);
+                        mBitC.getBitmap("head3")
+                        ,null, innerPos(bodyList.get(0)),null);
                 break;
             case GameData.WEST:
                 canvas.drawBitmap(
-                        mBitMapContainer.getBitmap("head4")
-                        ,null, setPos(bodyList.get(0)),null);
+                        mBitC.getBitmap("head4")
+                        ,null, innerPos(bodyList.get(0)),null);
                 break;
         }
 
@@ -211,36 +303,36 @@ public class SnakeView extends View {
                 case GameData.NORTH:
                 case GameData.SOUTH:
                     canvas.drawBitmap(
-                            mBitMapContainer.getBitmap("body2")
-                            , null, setPos(bodyList.get(i)), null);
+                            mBitC.getBitmap("body2")
+                            , null, innerPos(bodyList.get(i)), null);
                     break;
                 case GameData.EAST:
                 case GameData.WEST:
                     canvas.drawBitmap(
-                            mBitMapContainer.getBitmap("body1")
-                            , null, setPos(bodyList.get(i)), null);
+                            mBitC.getBitmap("body1")
+                            , null, innerPos(bodyList.get(i)), null);
 
                     break;
 
                 case GameData.NEAST:
                     canvas.drawBitmap(
-                            mBitMapContainer.getBitmap("c_body1")
-                            , null, setPos(bodyList.get(i)), null);
+                            mBitC.getBitmap("c_body1")
+                            , null, innerPos(bodyList.get(i)), null);
                     break;
                 case GameData.SEAST:
                     canvas.drawBitmap(
-                            mBitMapContainer.getBitmap("c_body2")
-                            , null, setPos(bodyList.get(i)), null);
+                            mBitC.getBitmap("c_body2")
+                            , null, innerPos(bodyList.get(i)), null);
                     break;
                 case GameData.SWEST:
                     canvas.drawBitmap(
-                            mBitMapContainer.getBitmap("c_body3")
-                            , null, setPos(bodyList.get(i)), null);
+                            mBitC.getBitmap("c_body3")
+                            , null, innerPos(bodyList.get(i)), null);
                     break;
                 case GameData.NWEST:
                     canvas.drawBitmap(
-                            mBitMapContainer.getBitmap("c_body4")
-                            , null, setPos(bodyList.get(i)), null);
+                            mBitC.getBitmap("c_body4")
+                            , null, innerPos(bodyList.get(i)), null);
                     break;
             }
         }
@@ -250,30 +342,30 @@ public class SnakeView extends View {
         switch(compass){
             case GameData.NORTH:
                 canvas.drawBitmap(
-                        mBitMapContainer.getBitmap("tail1")
-                        ,null, setPos(bodyList.get(i)),null);
+                        mBitC.getBitmap("tail1")
+                        ,null, innerPos(bodyList.get(i)),null);
                 break;
             case GameData.SOUTH:
                 canvas.drawBitmap(
-                        mBitMapContainer.getBitmap("tail2")
-                        ,null, setPos(bodyList.get(i)),null);
+                        mBitC.getBitmap("tail2")
+                        ,null, innerPos(bodyList.get(i)),null);
                 break;
             case GameData.EAST:
                 canvas.drawBitmap(
-                        mBitMapContainer.getBitmap("tail3")
-                        ,null, setPos(bodyList.get(i)),null);
+                        mBitC.getBitmap("tail3")
+                        ,null, innerPos(bodyList.get(i)),null);
                 break;
             case GameData.WEST:
                 canvas.drawBitmap(
-                        mBitMapContainer.getBitmap("tail4")
-                        ,null, setPos(bodyList.get(i)),null);
+                        mBitC.getBitmap("tail4")
+                        ,null, innerPos(bodyList.get(i)),null);
                 break;
         }
 
         for(i=0; i < appleList.size(); ++i){
             canvas.drawBitmap(
-                    mBitMapContainer.getBitmap("apple")
-                    ,null, setPos(appleList.get(i)),null);
+                    mBitC.getBitmap("apple")
+                    ,null, innerPos(appleList.get(i)),null);
 
         }
     }

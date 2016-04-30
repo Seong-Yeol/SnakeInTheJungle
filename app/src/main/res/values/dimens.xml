@@ -2,4 +2,19 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="corner_block_width">32dp</dimen>
+    <dimen name="corner_block_height">32dp</dimen>
+
+    <dimen name="top_block_width">17dp</dimen>
+    <dimen name="top_block_height">23dp</dimen>
+
+    <dimen name="vertical_block_chip_width">25dp</dimen>
+    <dimen name="vertical_block_chip_height">25dp</dimen>
+
+    <dimen name="lion_chip_width">38dp</dimen>
+    <dimen name="lion_chip_height">38dp</dimen>
+
+    <dimen name="tail_chip_width">20dp</dimen>
+    <dimen name="tail_chip_height">20dp</dimen>
 </resources>

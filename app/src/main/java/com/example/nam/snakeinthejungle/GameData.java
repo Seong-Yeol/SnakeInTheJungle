@@ -13,7 +13,7 @@ public class GameData {
     private ArrayList<Point> mBodyList;
     private ArrayList<Point> mAppleList;
 
-    int [][]mFieldMat = new int[20][20];
+    private Point mInnerFieldSize;
 
     private int mDirection = EAST;
     private int mNextDirection = EAST;
@@ -27,15 +27,6 @@ public class GameData {
     public static final int WEST = 8;
     public static final int NWEST = 9;
 
-    public static final int NTAIL = 10;
-    public static final int STAIL = 11;
-    public static final int ETAIL = 12;
-    public static final int WTAIL = 13;
-
-    int mHeadX;
-    int mHeadY;
-
-
     public GameData(){
 
         mBodyList = new ArrayList<>();
@@ -43,13 +34,6 @@ public class GameData {
     }
 
     public boolean init() {
-        int i,j;
-
-//        for(i=0; i < 20; i++){
-//            for(j=0; j < 20; j++){
-//                mFieldMat[i][j] = EMPTY;
-//            }
-//        }
         mDirection = EAST;
         mNextDirection = EAST;
 
@@ -57,15 +41,12 @@ public class GameData {
         mBodyList.add(new Point(3,1));
         mBodyList.add(new Point(2,1));
         mBodyList.add(new Point(1,1));
-/*        mFieldMat[1][1] = ETAIL;
-        mFieldMat[2][1] = EAST;
-        mFieldMat[3][1] = EAST;
-        mFieldMat[4][1] = HEAD;*/
-
-        mHeadX = 4;
-        mHeadX = 1;
 
         return true;
+    }
+
+    public void setInnerFieldSize(Point p){
+        mInnerFieldSize = p;
     }
 
     public boolean gameover(){
@@ -201,7 +182,7 @@ public class GameData {
                 break;
             case EAST:
                 curPoint = new Point(mBodyList.get(0));
-                if(curPoint.getX() < 20){
+                if(curPoint.getX() < mInnerFieldSize.getX()){
                     curPoint.setX((curPoint.getX()+1));
                     mBodyList.add(0,curPoint);
                 }else{
@@ -211,7 +192,7 @@ public class GameData {
                 break;
             case SOUTH:
                 curPoint = new Point(mBodyList.get(0));
-                if(curPoint.getY()<20){
+                if(curPoint.getY()<mInnerFieldSize.getY()){
                     curPoint.setY((curPoint.getY()+1));
                     mBodyList.add(0,curPoint);
                 }else{
@@ -258,21 +239,6 @@ public class GameData {
     private boolean checkBody(){
         Point front = new Point(mBodyList.get(0));
 
-//        switch(mNextDirection) {
-//            case NORTH:
-//                front.setY(front.getY() - 1);
-//                break;
-//            case EAST:
-//                front.setY(front.getX() + 1);
-//                break;
-//            case SOUTH:
-//                front.setX(front.getY() + 1 );
-//                break;
-//            case WEST:
-//                front.setX(front.getX() - 1 );
-//                break;
-//        }
-
         for( int i = 1 ; i < mBodyList.size() ; ++i ){
             if(front.equals(mBodyList.get(i))){
                 Log.d("Nam","몸만나서 죽음");
@@ -285,21 +251,6 @@ public class GameData {
 
     private boolean checkApple(){
         Point front = new Point(mBodyList.get(0));
-
-//        switch(mNextDirection) {
-//            case NORTH:
-//                front.setY(front.getY() - 1);
-//                break;
-//            case EAST:
-//                front.setY(front.getX() + 1);
-//                break;
-//            case SOUTH:
-//                front.setX(front.getY() + 1 );
-//                break;
-//            case WEST:
-//                front.setX(front.getX() - 1 );
-//                break;
-//        }
 
         if(mAppleList.contains(front)){
             for( int i = 0; i< mAppleList.size() ; ++i){
@@ -318,12 +269,12 @@ public class GameData {
     }
 
     public boolean generateApple(){
-        Point Apple = new Point(randRange(0,19),randRange(0,19));
+        Point Apple = new Point(randRange(0,mInnerFieldSize.getX()-1),randRange(0,mInnerFieldSize.getY()-1));
 
         int i=0;
         while (mBodyList.contains(Apple) ){
-            Apple.setX(randRange(0,19));
-            Apple.setY(randRange(0,19));
+            Apple.setX(randRange(0,mInnerFieldSize.getX()-1));
+            Apple.setY(randRange(0,mInnerFieldSize.getY()-1));
             if(++i > 1000)
                 return false;
         }
@@ -335,14 +286,4 @@ public class GameData {
 
         return true;
     }
-
-    final int [][] getFieldMat() {
-        return mFieldMat;
-    }
-
-    public int getFieldData(int x, int y){
-        return mFieldMat[x][y];
-    }
-
-
 }

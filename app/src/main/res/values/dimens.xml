@@ -17,4 +17,11 @@
 
     <dimen name="tail_chip_width">20dp</dimen>
     <dimen name="tail_chip_height">20dp</dimen>
+
+    <dimen name="game_top_info_panel_height">50dp</dimen>
+
+    <dimen name="game_message_font_size">30dp</dimen>
+
+    <dimen name="background_rect_gap">5dp</dimen>
+
 </resources>

@@ -3,10 +3,101 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".GameActivity">
+
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/game_top_info_panel_height"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/GamePanel"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="false"
+        android:background="#bfe0a6"
+        android:gravity="center">
+
+        <Button
+            android:layout_height="40dp"
+            android:layout_width="40dp"
+            android:id="@+id/backBtn"
+            android:padding="5dp"
+            android:background="@drawable/back_btn"
+            android:layout_marginStart="5dp"
+            android:gravity="center"
+            android:layout_alignTop="@+id/pauseBtn"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:onClick="onClickBack" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="180dp"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:id="@+id/ScoreBoard"
+            android:layout_marginLeft="19dp"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/scoreboard"
+            android:layout_alignTop="@+id/backBtn"
+            android:layout_toRightOf="@+id/backBtn">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Score : "
+                android:id="@+id/scoreLabel"
+                android:paddingLeft="15dp"
+                android:textSize="20dp" />
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="999999"
+                android:id="@+id/scoreText"
+                android:textAlignment="textEnd" />
+        </LinearLayout>
+
+        <Button
+            android:layout_height="40dp"
+            android:layout_width="40dp"
+            android:id="@+id/settingBtn"
+            android:padding="5dp"
+            android:background="@drawable/setting_btn"
+            android:layout_marginEnd="10dp"
+            android:layout_toLeftOf="@+id/pauseBtn"
+            android:layout_toStartOf="@+id/pauseBtn"
+            android:layout_alignTop="@+id/pauseBtn"
+            android:onClick="onClickSetting" />
+
+        <Button
+            android:layout_height="40dp"
+            android:layout_width="40dp"
+            android:id="@+id/pauseBtn"
+            android:background="@drawable/pause_btn"
+
+            android:padding="5dp"
+            android:gravity="center|right"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="5dp"
+            android:onClick="onClickPause" />
+
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/GamePanel"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/GameLayout">
+    </LinearLayout>
 
 </RelativeLayout>

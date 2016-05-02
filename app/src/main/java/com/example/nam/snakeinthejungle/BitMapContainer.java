@@ -30,21 +30,14 @@ public class BitMapContainer extends View {
 
         Bitmap bit;
 
-        Bitmap corner_block1;
-        Bitmap corner_block2;
-        Bitmap corner_block3;
-        Bitmap corner_block4;
+        Bitmap corner_block1, corner_block2, corner_block3, corner_block4;
         Bitmap top_block;
         Bitmap bottom_block;
         Bitmap left_block;
         Bitmap right_block;
         Bitmap lion;
-        Bitmap head1;
-        Bitmap head2;
-        Bitmap head3;
-        Bitmap head4;
-        Bitmap body1;
-        Bitmap body2;
+        Bitmap head1, head2, head3, head4;
+        Bitmap body1, body2;
         Bitmap c_body1;
         Bitmap c_body2;
         Bitmap c_body3;
@@ -160,55 +153,9 @@ public class BitMapContainer extends View {
         bit = BitmapFactory.decodeResource(getResources(),R.mipmap.apple);
         apple = Bitmap.createBitmap(bit,0, 0, tcwh, tcwh);
         mHt.put("apple", apple);
-
-//        int width_picxels = this.getWidth();
-//        int height_picxels = this.getHeight();
-//
-//        int cbwidth = corner_block1.getWidth();
-//        int cbheight = corner_block1.getHeight();
-//        int tbwidth = top_block.getWidth();
-//        int tbheight = top_block.getHeight();
-//        int vbwidth = left_block.getWidth();
-//        int vbheigh = right_block.getHeight();
-
-//        Log.d("Nam","ViewWid=" + width_picxels + " ViewHit =" + height_picxels);
-//        Log.d("Nam","VerticalBlockWid=" + vbwidth + " Horizon_Hit =" + tbheight);
-//        Log.d("Nam","TailChipSize="+ tcwh);
-//
-//        int inner_width = width_picxels - vbwidth*2;
-//        int inner_horizon_blocks = inner_width / tcwh;
-//        int inner_padding_width = (inner_width%tcwh)/2;
-//
-//        if( inner_padding_width < tcwh / 4){
-//            inner_padding_width = tcwh / 2;
-//            inner_horizon_blocks--;
-//            inner_width = inner_horizon_blocks * tcwh;
-//        }
-//
-//        Log.d("Nam","InnerWidth="+inner_width + " InnerHorizonBlocks=" + inner_horizon_blocks + " InnerPaddingWid="+ inner_padding_width);
-//
-//        int inner_height = height_picxels - tbheight*2;
-//        int inner_vertical_blocks = inner_height / tcwh;
-//        int inner_padding_height = (inner_height%tcwh)/2;
-//
-//        if( inner_padding_height < tcwh / 4){
-//            inner_padding_height = tcwh / 2;
-//            inner_vertical_blocks--;
-//            inner_height = inner_vertical_blocks * tcwh;
-//        }
-//
-//        Log.d("Nam","InnerHeight="+inner_height + " InnerVerticalBlocks=" + inner_vertical_blocks + " InnerPaddingHit="+ inner_padding_height);
-//
-//        mInnerRect = new Rect(vbwidth + inner_padding_width, tbheight + inner_padding_height
-//                ,vbwidth + inner_padding_width + tcwh*(inner_horizon_blocks), tbheight + inner_padding_height + tcwh*(inner_vertical_blocks));
-//
-//        Log.d("Nam","InnerRect=" + mInnerRect);
-
-
     }
 
-    public Bitmap getBitmap(String file_name){
-        return mHt.get(file_name);
-    }
+    public Bitmap getBitmap(String file_name){ return mHt.get(file_name); }
+    public void putBitmap(String key, Bitmap bit){ mHt.put(key,bit);}
 
 }

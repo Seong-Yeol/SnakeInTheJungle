@@ -5,22 +5,49 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class GameActivity extends AppCompatActivity {
 
-    GestureDetector mDetector;
-    SnakeView sv;
+    private GestureDetector mDetector;
+    private LinearLayout mGameLayout;
+    private RelativeLayout mGamePanel;
+    private SnakeView sv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_game);
+        mGameLayout = (LinearLayout)findViewById(R.id.GameLayout);
+        mGamePanel = (RelativeLayout)findViewById(R.id.GamePanel);
 
         mDetector = new GestureDetector(this, mGestureListener);
-        sv = new SnakeView(this);
 
-        setContentView(sv);
+        sv = new SnakeView(this);
+        sv.setScoreTextView((TextView)findViewById(R.id.scoreText));
+
+        mGameLayout.addView(sv);
+
+//        sv.init();
 
     }
+
+    public void onClickPause(View v){
+        sv.pause();
+    }
+
+    public void onClickSetting(View v){
+
+    }
+
+    public void onClickBack(View v){
+
+    }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {

@@ -18,6 +18,8 @@ public class GameData {
 
     private Point mInnerFieldSize;
 
+    private AudioManager mAudMgr;
+
     private int mDirection = EAST;
     private int mNextDirection = EAST;
 
@@ -39,7 +41,8 @@ public class GameData {
         return mState;
     }
 
-    public GameData() {
+    public GameData(AudioManager audMgr) {
+        mAudMgr = audMgr;
 
         mBodyList = new ArrayList<>();
         mAppleList = new ArrayList<>();
@@ -272,8 +275,11 @@ public class GameData {
 
         eat_apple = checkApple();
 
-        if (eat_apple)
+        if (eat_apple) {
             score = score + 10;
+            mAudMgr.eatSound();
+            generateApple();
+        }
         else
             mBodyList.remove(mBodyList.size() - 1);
 

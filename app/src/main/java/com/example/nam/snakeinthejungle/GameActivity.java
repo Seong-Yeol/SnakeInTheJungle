@@ -1,5 +1,6 @@
 package com.example.nam.snakeinthejungle;
 
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,8 +32,23 @@ public class GameActivity extends AppCompatActivity {
         sv.setScoreTextView((TextView)findViewById(R.id.scoreText));
 
         mGameLayout.addView(sv);
+    }
 
-//        sv.init();
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sv.pause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sv.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
     }
 

@@ -22,6 +22,7 @@ import java.util.ArrayList;
  */
 public class SnakeView extends View {
     private GameData mGameData;
+    private AudioManager mAudMgr;
     private BitMapContainer mBitC;
     private TextView mScoreText;
 
@@ -30,13 +31,15 @@ public class SnakeView extends View {
     int mLastGenApple = 0;
     int mSnakeSpeed = 30;
     int mAppleGenIntval = 500;
+    boolean isPause = false;
 
     Rect mInnerRect;
 
     public SnakeView(Context context) {
         super(context);
 
-        mGameData = new GameData();
+        mAudMgr = new AudioManager(context);
+        mGameData = new GameData(mAudMgr);
         mBitC = new BitMapContainer(context);
 
         mHandler.sendEmptyMessage(0);
@@ -64,8 +67,23 @@ public class SnakeView extends View {
         invalidate();
     }
 
+    public void runGame() {
+        mGameData.runGame();
+        mAudMgr.start();
+    }
+
+    public void start() {
+        mAudMgr.start();
+    }
+
     public void pause() {
-        mGameData.pauseGame();
+        if( isPause ){
+            mAudMgr.start();
+        }
+        else {
+            mGameData.pauseGame();
+            mAudMgr.pause();
+        }
         invalidate();
     }
 
@@ -73,7 +91,7 @@ public class SnakeView extends View {
 
         if (mGameData.isRunning()) {
             if (mLastGenApple + mAppleGenIntval < mTick) {
-                mGameData.generateApple();
+//                mGameData.generateApple();
                 mLastGenApple = mTick;
                 invalidate();
             }
@@ -85,11 +103,6 @@ public class SnakeView extends View {
         }
 
 
-    }
-
-
-    public void runGame() {
-        mGameData.runGame();
     }
 
     public void Up() {
@@ -188,8 +201,8 @@ public class SnakeView extends View {
 
         Log.d("Nam", "InnerHeight=" + inner_height + " InnerVerticalBlocks=" + inner_vertical_blocks + " InnerPaddingHit=" + inner_padding_height);
 
-        mInnerRect = new Rect(gap, gap
-                , gap + tcwh * (inner_horizon_blocks), gap + tcwh * (inner_vertical_blocks));
+        mInnerRect = new Rect( inner_padding_width, inner_padding_height
+                ,  inner_padding_width + tcwh * (inner_horizon_blocks), inner_padding_height + tcwh * (inner_vertical_blocks));
 
         Log.d("Nam", "InnerRect=" + mInnerRect);
 

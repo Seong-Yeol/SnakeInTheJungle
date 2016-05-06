@@ -1,6 +1,7 @@
 package com.example.nam.snakeinthejungle;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,8 +13,6 @@ public class TitleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_title);
-
-        //findViewById(R.id.new_game_button).setOnClickListener(mClickListener);
     }
 
     public void onClickNewGame(View v){
@@ -23,6 +22,8 @@ public class TitleActivity extends AppCompatActivity {
                 new Intent(TitleActivity.this, GameActivity.class);
         startActivity(intentGameActivity);
     }
+
+
 
     View.OnClickListener mClickListener = new View.OnClickListener() {
         public void onClick(View v) {

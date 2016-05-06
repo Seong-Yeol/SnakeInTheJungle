@@ -1,5 +1,6 @@
 package com.example.nam.snakeinthejungle;
 
+import android.content.Context;
 import android.support.annotation.BoolRes;
 import android.support.v4.app.NotificationCompatExtras;
 import android.util.Log;
@@ -9,17 +10,13 @@ import java.util.ArrayList;
 /**
  * Created by Nam on 2016-04-27.
  */
-public class GameData {
+public class GameManager {
 
     private ArrayList<Point> mBodyList;
     private ArrayList<Point> mAppleList;
-
     private int score;
-
     private Point mInnerFieldSize;
-
     private AudioManager mAudMgr;
-
     private int mDirection = EAST;
     private int mNextDirection = EAST;
 
@@ -36,13 +33,14 @@ public class GameData {
     public static final int READY = 1;
     public static final int PAUSE = 2;
     public static final int RUNNING = 4;
+    public static final int STOP = 8;
 
     public int getState() {
         return mState;
     }
 
-    public GameData(AudioManager audMgr) {
-        mAudMgr = audMgr;
+    public GameManager(Context context) {
+        mAudMgr = new AudioManager(context);
 
         mBodyList = new ArrayList<>();
         mAppleList = new ArrayList<>();
@@ -83,6 +81,7 @@ public class GameData {
         Log.d("SDug", "State Changed : Ready");
         mState = READY;
         this.init();
+        mAudMgr.start();
 
         return true;
     }
@@ -90,20 +89,44 @@ public class GameData {
     public void runGame() {
         Log.d("SDug", "State Changed : RUNNING");
         mState = RUNNING;
+        mAudMgr.start();
     }
 
     public void pauseGame() {
         Log.d("SDug", "State Changed : PAUSE");
         mState = PAUSE;
+        mAudMgr.pause();
+    }
+
+    public void resumeGame(){
+        mAudMgr.start();
     }
 
     public void stopGame() {
-
+        mState = STOP;
     }
 
 
     public boolean isRunning() {
         if (mState == RUNNING)
+            return true;
+        return false;
+    }
+
+    public boolean isPause(){
+        if( mState == PAUSE)
+            return true;
+        return false;
+    }
+
+    public boolean isReady(){
+        if( mState == READY)
+            return true;
+        return false;
+    }
+
+    public boolean isStop(){
+        if( mState == STOP)
             return true;
         return false;
     }
@@ -114,13 +137,7 @@ public class GameData {
 
     public boolean gameover() {
         Log.d("SDug", "GameOver");
-        Log.d("Nam", "gameover called");
-
-
-        this.init();
-
-        Log.d("Nam", "gameover returned");
-
+        mState = STOP;
         return true;
     }
 
@@ -165,31 +182,6 @@ public class GameData {
     }
 
     public int getCompass(Point des, Point det) {
-        if (des.getY() == det.getY()) {
-            if (des.getX() > det.getX())
-                return EAST;
-            else
-                return WEST;
-        } else if (des.getY() < det.getY()) {
-            if (des.getX() == det.getX())
-                return NORTH;
-            else if (des.getX() > des.getX())
-                return NEAST;
-            else
-                return NWEST;
-        } else {
-            if (des.getX() == det.getX())
-                return SOUTH;
-            else if (des.getX() > des.getX())
-                return SEAST;
-            else
-                return SWEST;
-        }
-
-    }
-
-
-    public int getCompass(Point des, Point cur, Point det) {
         if (des.getY() == det.getY()) {
             if (des.getX() > det.getX())
                 return EAST;

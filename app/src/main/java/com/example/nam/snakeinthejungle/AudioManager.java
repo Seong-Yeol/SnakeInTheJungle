@@ -11,6 +11,9 @@ import android.media.MediaPlayer;
 public class AudioManager {
     private MediaPlayer mBGM;
     private MediaPlayer mEatingSound;
+
+    private boolean onBgm = true;
+    private boolean onEffect = true;
     
     public AudioManager(Context context){
         mBGM = MediaPlayer.create(context, R.raw.dubakupado);
@@ -20,19 +23,23 @@ public class AudioManager {
     }
     
     public void pause(){
-        mBGM.pause();
+        if( mBGM.isPlaying() )
+            mBGM.pause();
+
     }
     
     public void start(){
         if( mBGM != null ){
-            if( !mBGM.isPlaying() )
+            if( !mBGM.isPlaying() && onBgm )
                 mBGM.start();
         }
     }
 
     public void eatSound(){
-        mEatingSound.seekTo(0);
-        mEatingSound.start();
+        if( onEffect ) {
+            mEatingSound.seekTo(0);
+            mEatingSound.start();
+        }
     }
 
     @Override

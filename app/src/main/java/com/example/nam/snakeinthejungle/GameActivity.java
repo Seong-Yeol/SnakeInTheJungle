@@ -43,7 +43,7 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        sv.start();
+        sv.resume();
     }
 
     @Override

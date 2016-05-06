@@ -20,26 +20,24 @@ import java.util.ArrayList;
  * Created by Nam on 2016-04-27.
  * 게임을 진행하는 뷰
  */
+
 public class SnakeView extends View {
-    private GameData mGameData;
-    private AudioManager mAudMgr;
+    private GameManager mGameManager;
     private BitMapContainer mBitC;
     private TextView mScoreText;
 
-    int mTick = 0;
-    int mLastMovedTick = 0;
-    int mLastGenApple = 0;
-    int mSnakeSpeed = 30;
-    int mAppleGenIntval = 500;
-    boolean isPause = false;
+    private int mTick = 0;
+    private int mLastMovedTick = 0;
+    private int mLastGenApple = 0;
+    private int mSnakeSpeed = 20;
+    private int mAppleGenIntval = 500;
 
     Rect mInnerRect;
 
     public SnakeView(Context context) {
         super(context);
 
-        mAudMgr = new AudioManager(context);
-        mGameData = new GameData(mAudMgr);
+        mGameManager = new GameManager(context);
         mBitC = new BitMapContainer(context);
 
         mHandler.sendEmptyMessage(0);
@@ -55,7 +53,7 @@ public class SnakeView extends View {
     }
 
     public void ready() {
-        mGameData.readyGame();
+        mGameManager.readyGame();
         mTick = 0;
         mLastMovedTick = 0;
         mLastGenApple = 0;
@@ -68,36 +66,33 @@ public class SnakeView extends View {
     }
 
     public void runGame() {
-        mGameData.runGame();
-        mAudMgr.start();
+        mGameManager.runGame();
     }
 
-    public void start() {
-        mAudMgr.start();
+    public void resume(){
+        mGameManager.resumeGame();
     }
 
     public void pause() {
-        if( isPause ){
-            mAudMgr.start();
+        if( mGameManager.isPause() ){
         }
         else {
-            mGameData.pauseGame();
-            mAudMgr.pause();
+            mGameManager.pauseGame();
         }
         invalidate();
     }
 
     private void main() {
 
-        if (mGameData.isRunning()) {
+        if (mGameManager.isRunning()) {
             if (mLastGenApple + mAppleGenIntval < mTick) {
-//                mGameData.generateApple();
+//                mGameManager.generateApple();
                 mLastGenApple = mTick;
                 invalidate();
             }
             if (mLastMovedTick + mSnakeSpeed < mTick) {
                 mLastMovedTick = mTick;
-                mGameData.updateSnake();
+                mGameManager.updateSnake();
                 invalidate();
             }
         }
@@ -106,24 +101,24 @@ public class SnakeView extends View {
     }
 
     public void Up() {
-        mGameData.setNextDirection(GameData.NORTH);
+        mGameManager.setNextDirection(GameManager.NORTH);
     }
 
     public void Down() {
-        mGameData.setNextDirection(GameData.SOUTH);
+        mGameManager.setNextDirection(GameManager.SOUTH);
     }
 
     public void Left() {
-        mGameData.setNextDirection(GameData.WEST);
+        mGameManager.setNextDirection(GameManager.WEST);
     }
 
     public void Right() {
-        mGameData.setNextDirection(GameData.EAST);
+        mGameManager.setNextDirection(GameManager.EAST);
     }
 
     Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
-            if (mGameData.isRunning())
+            if (mGameManager.isRunning())
                 mTick++;
             mHandler.sendEmptyMessageDelayed(0, 10);
             main();
@@ -142,11 +137,14 @@ public class SnakeView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (mGameData.getState() == GameData.READY) {
+        if (mGameManager.getState() == GameManager.READY) {
             runGame();
         }
-        if (mGameData.getState() == GameData.PAUSE) {
+        if (mGameManager.getState() == GameManager.PAUSE) {
             runGame();
+        }
+        if (mGameManager.isStop() ){
+            ready();
         }
 
         return super.onTouchEvent(event);
@@ -206,7 +204,7 @@ public class SnakeView extends View {
 
         Log.d("Nam", "InnerRect=" + mInnerRect);
 
-        mGameData.setInnerFieldSize(new Point(inner_horizon_blocks - 1, inner_vertical_blocks - 1));
+        mGameManager.setInnerFieldSize(new Point(inner_horizon_blocks - 1, inner_vertical_blocks - 1));
 
         this.init();
     }
@@ -219,27 +217,27 @@ public class SnakeView extends View {
         int i, j;
 
         /*스네이크 드로우*/
-        ArrayList<Point> bodyList = mGameData.getBodyList();
-        ArrayList<Point> appleList = mGameData.getAppleList();
+        ArrayList<Point> bodyList = mGameManager.getBodyList();
+        ArrayList<Point> appleList = mGameManager.getAppleList();
 
         /*머리부분 드로우*/
-        switch (mGameData.getDiection()) {
-            case GameData.NORTH:
+        switch (mGameManager.getDiection()) {
+            case GameManager.NORTH:
                 canvas.drawBitmap(
                         mBitC.getBitmap("head1")
                         , null, innerPos(bodyList.get(0)), null);
                 break;
-            case GameData.SOUTH:
+            case GameManager.SOUTH:
                 canvas.drawBitmap(
                         mBitC.getBitmap("head2")
                         , null, innerPos(bodyList.get(0)), null);
                 break;
-            case GameData.EAST:
+            case GameManager.EAST:
                 canvas.drawBitmap(
                         mBitC.getBitmap("head3")
                         , null, innerPos(bodyList.get(0)), null);
                 break;
-            case GameData.WEST:
+            case GameManager.WEST:
                 canvas.drawBitmap(
                         mBitC.getBitmap("head4")
                         , null, innerPos(bodyList.get(0)), null);
@@ -250,50 +248,50 @@ public class SnakeView extends View {
         int compass = 0, frontcompass, backcompass;
         for (i = 1; i < bodyList.size() - 1; i++) {
 
-            frontcompass = mGameData.getCompass(bodyList.get(i - 1), bodyList.get(i));
-            backcompass = mGameData.getCompass(bodyList.get(i), bodyList.get(i + 1));
+            frontcompass = mGameManager.getCompass(bodyList.get(i - 1), bodyList.get(i));
+            backcompass = mGameManager.getCompass(bodyList.get(i), bodyList.get(i + 1));
 
             if (frontcompass == backcompass)
                 compass = frontcompass;
             else {
                 switch (backcompass) {
-                    case GameData.NORTH:
+                    case GameManager.NORTH:
                         switch (frontcompass) {
-                            case GameData.EAST:
-                                compass = GameData.SWEST;
+                            case GameManager.EAST:
+                                compass = GameManager.SWEST;
                                 break;
-                            case GameData.WEST:
-                                compass = GameData.SEAST;
+                            case GameManager.WEST:
+                                compass = GameManager.SEAST;
                                 break;
                         }
                         break;
-                    case GameData.SOUTH:
+                    case GameManager.SOUTH:
                         switch (frontcompass) {
-                            case GameData.EAST:
-                                compass = GameData.NWEST;
+                            case GameManager.EAST:
+                                compass = GameManager.NWEST;
                                 break;
-                            case GameData.WEST:
-                                compass = GameData.NEAST;
+                            case GameManager.WEST:
+                                compass = GameManager.NEAST;
                                 break;
                         }
                         break;
-                    case GameData.EAST:
+                    case GameManager.EAST:
                         switch (frontcompass) {
-                            case GameData.NORTH:
-                                compass = GameData.NEAST;
+                            case GameManager.NORTH:
+                                compass = GameManager.NEAST;
                                 break;
-                            case GameData.SOUTH:
-                                compass = GameData.SEAST;
+                            case GameManager.SOUTH:
+                                compass = GameManager.SEAST;
                                 break;
                         }
                         break;
-                    case GameData.WEST:
+                    case GameManager.WEST:
                         switch (frontcompass) {
-                            case GameData.NORTH:
-                                compass = GameData.NWEST;
+                            case GameManager.NORTH:
+                                compass = GameManager.NWEST;
                                 break;
-                            case GameData.SOUTH:
-                                compass = GameData.SWEST;
+                            case GameManager.SOUTH:
+                                compass = GameManager.SWEST;
                                 break;
                         }
                         break;
@@ -302,36 +300,36 @@ public class SnakeView extends View {
 
 
             switch (compass) {
-                case GameData.NORTH:
-                case GameData.SOUTH:
+                case GameManager.NORTH:
+                case GameManager.SOUTH:
                     canvas.drawBitmap(
                             mBitC.getBitmap("body2")
                             , null, innerPos(bodyList.get(i)), null);
                     break;
-                case GameData.EAST:
-                case GameData.WEST:
+                case GameManager.EAST:
+                case GameManager.WEST:
                     canvas.drawBitmap(
                             mBitC.getBitmap("body1")
                             , null, innerPos(bodyList.get(i)), null);
 
                     break;
 
-                case GameData.NEAST:
+                case GameManager.NEAST:
                     canvas.drawBitmap(
                             mBitC.getBitmap("c_body1")
                             , null, innerPos(bodyList.get(i)), null);
                     break;
-                case GameData.SEAST:
+                case GameManager.SEAST:
                     canvas.drawBitmap(
                             mBitC.getBitmap("c_body2")
                             , null, innerPos(bodyList.get(i)), null);
                     break;
-                case GameData.SWEST:
+                case GameManager.SWEST:
                     canvas.drawBitmap(
                             mBitC.getBitmap("c_body3")
                             , null, innerPos(bodyList.get(i)), null);
                     break;
-                case GameData.NWEST:
+                case GameManager.NWEST:
                     canvas.drawBitmap(
                             mBitC.getBitmap("c_body4")
                             , null, innerPos(bodyList.get(i)), null);
@@ -340,24 +338,24 @@ public class SnakeView extends View {
         }
 
         /*꼬리부분 드로우*/
-        compass = mGameData.getCompass(bodyList.get(i - 1), bodyList.get(i));
+        compass = mGameManager.getCompass(bodyList.get(i - 1), bodyList.get(i));
         switch (compass) {
-            case GameData.NORTH:
+            case GameManager.NORTH:
                 canvas.drawBitmap(
                         mBitC.getBitmap("tail1")
                         , null, innerPos(bodyList.get(i)), null);
                 break;
-            case GameData.SOUTH:
+            case GameManager.SOUTH:
                 canvas.drawBitmap(
                         mBitC.getBitmap("tail2")
                         , null, innerPos(bodyList.get(i)), null);
                 break;
-            case GameData.EAST:
+            case GameManager.EAST:
                 canvas.drawBitmap(
                         mBitC.getBitmap("tail3")
                         , null, innerPos(bodyList.get(i)), null);
                 break;
-            case GameData.WEST:
+            case GameManager.WEST:
                 canvas.drawBitmap(
                         mBitC.getBitmap("tail4")
                         , null, innerPos(bodyList.get(i)), null);
@@ -372,7 +370,7 @@ public class SnakeView extends View {
 
         }
 
-        if (mGameData.getState() == GameData.READY) {
+        if (mGameManager.isReady()) {
             Paint paint = new Paint();
             paint.setColor(Color.BLACK);
             paint.setAntiAlias(true);
@@ -381,7 +379,7 @@ public class SnakeView extends View {
             canvas.drawText("터치하여 시작하기", this.getWidth() / 2, this.getHeight() / 2, paint);
         }
 
-        if (mGameData.getState() == GameData.PAUSE) {
+        if (mGameManager.isPause()) {
             Paint paint = new Paint();
             paint.setColor(Color.BLACK);
             paint.setAntiAlias(true);
@@ -390,9 +388,17 @@ public class SnakeView extends View {
             canvas.drawText("(일시정지)터치하여 시작하기", this.getWidth() / 2, this.getHeight() / 2, paint);
         }
 
-        mScoreText.setText("" + mGameData.getScore());
+        if(mGameManager.isStop()){
+            Paint paint = new Paint();
+            paint.setColor(Color.BLACK);
+            paint.setAntiAlias(true);
+            paint.setTextAlign(Paint.Align.CENTER);
+            paint.setTextSize((int) getResources().getDimension(R.dimen.game_message_font_size));
+            canvas.drawText("최종 스코어 : " + mGameManager.getScore(), this.getWidth() / 2,(this.getHeight() - (int)getResources().getDimension(R.dimen.game_message_font_size))/ 2, paint);
+            canvas.drawText("터치하여 리셋하기", this.getWidth() / 2,(this.getHeight() + (int)getResources().getDimension(R.dimen.game_message_font_size))/ 2, paint);
+        }
+
+        mScoreText.setText("" + mGameManager.getScore());
 
     }
-
-
 }
